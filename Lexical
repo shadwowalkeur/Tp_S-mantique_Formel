@@ -1,0 +1,47 @@
+class LexicalUnit{
+    Object obj;
+    public LexicalUnit(Object obj){
+        this.obj=obj;
+    }
+}
+
+%%
+%class Lexer
+%int
+%function next
+
+%{
+    public final int ID=1;
+	 public final int Entier
+	  public final int declaration
+	   public final int OP
+	    public final int OP1
+		 public final int Inistialisation
+		  public final int Inst
+		   public final int instruction
+		    public final int Actions
+             public final int Behavior
+			  public final int Commentaire
+
+
+    LexicalUnit lu;
+%}
+
+%eofval{
+    return 0;
+%eofval}
+
+%%
+[0-9]* {lu=new LexicalUnit(yytext());return Entier;}
+[a-zA-Z_][a-zA-Z0-9_]* {lu=new LexicalUnit(yytext());return ID;}
+(state:ID(,ID)*){lu=new LexicalUnit(yytext());return declaration;}
+("+"|"-"|"*"|"/") {lu=new LexicalUnit(yytext());return OP;}
+("+"|"-") {lu=new LexicalUnit(yytext());return OP1;}
+(init:ID=Entier(,ID=Entier)*) {lu=new LexicalUnit(yytext());return Inistialisation;}
+(IDOPID|OP1ID) {lu=new LexicalUnit(yytext());return Inst;}
+(ID=> ("[" Inst(,Inst)*"]" ) {lu=new LexicalUnit(yytext());return instruction;} // verification de ""
+(instruction (\n instruction)*)  {lu=new LexicalUnit(yytext());return Actions;}
+/////{lu=new LexicalUnit(yytext());return Behavior;}
+(#[a-zA-Z0-9_]*) {lu=new LexicalUnit(yytext());return Commentaire;}
+
+[^] {}
